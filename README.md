@@ -8,6 +8,18 @@
 pip install <path of this repo> -e
 ```
 
+At `gaussian_renderer/__init__.py`, change some lines
+```
+### from diff_gaussian_rasterization import GaussianRasterizationSettings, GaussianRasterizer
+from diff_gaussian_rasterization_depth_acc import GaussianRasterizationSettings, GaussianRasterizer
+
+### rendered_image, radii, depth = rasterizer(
+rendered_image, depth, acc, radii = rasterizer(
+
+### ... and return dictionary
+```
+
+
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
