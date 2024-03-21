@@ -450,8 +450,8 @@ renderCUDA(
 	const float T_final = inside ? final_Ts[pix_id] : 0;
 	float T = T_final;
 
-    const float Acc = inside ? final_As[pix_id] : 0;
-    const float Dep = inside ? final_Ds[pix_id] : 0;
+    const float A_final = inside ? final_As[pix_id] : 0;
+    const float D_final = inside ? final_Ds[pix_id] : 0;
 
 	// We start from the back. The ID of the last contributing
 	// Gaussian is known from each pixel from the forward.
@@ -522,7 +522,7 @@ renderCUDA(
 
 			T = T / (1.f - alpha);
 			const float dchannel_dcolor = alpha * T;
-            const float dD_ddepth = alpha*T/Acc;
+            const float dD_ddepth = alpha*T/A_final;
 
 			// Propagate gradients to per-Gaussian colors and keep
 			// gradients w.r.t. alpha (blending factor for a Gaussian/pixel
@@ -530,7 +530,7 @@ renderCUDA(
 			float dL_dalpha = 0.0f;
 			const int global_id = collected_id[j];
             //Partial derivative of depth loss with respect to each Gaussian depth
-            atomicAdd(&(dL_ddepths[global_id]), dD_ddepth * dL_dD);
+            atomicAdd(&(dL_ddepths[global_id]), dL_dD * dD_ddepth);
 			for (int ch = 0; ch < C; ch++)
 			{
 				const float c = collected_colors[ch * BLOCK_SIZE + j];
@@ -547,14 +547,14 @@ renderCUDA(
 			}
 
             //+dW_dalpha
-			const float dD_dW = -Dep/Acc;
+			const float dD_dA = -D_final/A_final;
 			accum_acc = last_alpha + (1.f - last_alpha) * accum_acc;
-			dL_dalpha += (1.f - accum_acc) * dL_dD * dD_dW;
+			dL_dalpha += (1.f - accum_acc) * dL_dD * dD_dA;
 
             //+dsum_dalpha
 			accum_dep = last_alpha * last_depth + (1.f - last_alpha) * accum_dep;
 			last_depth = collected_depths[j];
-			dL_dalpha += (collected_depths[j] - accum_dep) * (dL_dD / Acc);
+			dL_dalpha += (collected_depths[j] - accum_dep) * (dL_dD / A_final);
 			dL_dalpha *= T;
 
 			// Update last alpha (to be used in the next iteration)
