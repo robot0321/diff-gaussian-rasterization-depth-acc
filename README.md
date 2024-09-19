@@ -19,6 +19,9 @@ rendered_image, depth, acc, radii = rasterizer(
 ### ... and return dictionary
 ```
 
+## Notice
+* We update and confirm backward with pytorch by refering [diff-gaussian-rasterization](https://github.com/ashawkey/diff-gaussian-rasterization/tree/main), although some difference at `preprocessCUDA()` in cuda_rasterizer/backward.cu
+
 
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">

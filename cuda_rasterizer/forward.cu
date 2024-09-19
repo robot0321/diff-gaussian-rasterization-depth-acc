@@ -298,6 +298,7 @@ renderCUDA(
 	__shared__ int collected_id[BLOCK_SIZE];
 	__shared__ float2 collected_xy[BLOCK_SIZE];
 	__shared__ float4 collected_conic_opacity[BLOCK_SIZE];
+	__shared__ float collected_depth[BLOCK_SIZE];
 
 	// Initialize helper variables
 	float T = 1.0f;
@@ -323,6 +324,7 @@ renderCUDA(
 			collected_id[block.thread_rank()] = coll_id;
 			collected_xy[block.thread_rank()] = points_xy_image[coll_id];
 			collected_conic_opacity[block.thread_rank()] = conic_opacity[coll_id];
+			collected_depth[block.thread_rank()] = depths[coll_id];
 		}
 		block.sync();
 
@@ -358,7 +360,7 @@ renderCUDA(
 			// Eq. (3) from 3D Gaussian splatting paper.
 			for (int ch = 0; ch < CHANNELS; ch++)
 				C[ch] += features[collected_id[j] * CHANNELS + ch] * alpha * T;
-            D += depths[collected_id[j]] * alpha * T;
+            D += collected_depth[j] * alpha * T;
             A += alpha * T;
 			T = test_T;
 
@@ -377,7 +379,7 @@ renderCUDA(
 		for (int ch = 0; ch < CHANNELS; ch++)
 			out_color[ch * H * W + pix_id] = C[ch] + T * bg_color[ch];
 		A += 1e-8;
-        out_depth[pix_id]= D/A;
+        out_depth[pix_id]= D;
         out_acc[pix_id] = A;
 	}
 }
