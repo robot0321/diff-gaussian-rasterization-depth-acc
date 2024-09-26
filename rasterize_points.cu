@@ -142,7 +142,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	const int R,
 	const torch::Tensor& binningBuffer,
 	const torch::Tensor& imageBuffer,
-	const torch::Tensor& alphas,
 	const bool debug) 
 {
   const int P = means3D.size(0);
@@ -174,7 +173,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	  means3D.contiguous().data<float>(),
 	  sh.contiguous().data<float>(),
 	  colors.contiguous().data<float>(),
-	  alphas.contiguous().data<float>(),
 	  scales.data_ptr<float>(),
 	  scale_modifier,
 	  rotations.data_ptr<float>(),

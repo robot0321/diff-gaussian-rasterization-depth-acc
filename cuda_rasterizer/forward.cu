@@ -378,7 +378,7 @@ renderCUDA(
 		n_contrib[pix_id] = last_contributor;
 		for (int ch = 0; ch < CHANNELS; ch++)
 			out_color[ch * H * W + pix_id] = C[ch] + T * bg_color[ch];
-		A += 1e-8;
+		// A += 1e-8;
         out_depth[pix_id]= D;
         out_acc[pix_id] = A;
 	}

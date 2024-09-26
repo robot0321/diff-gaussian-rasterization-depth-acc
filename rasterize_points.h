@@ -61,7 +61,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	const int R,
 	const torch::Tensor& binningBuffer,
 	const torch::Tensor& imageBuffer,
-	const torch::Tensor& alphas,
 	const bool debug);
 		
 torch::Tensor markVisible(
